@@ -1,0 +1,161 @@
+# 🤖 uvm32
+
+uvm32 is a minimalist, dependency-free virtual machine sandbox designed for microcontrollers and other resource-constrained devices. Single C file, no dynamic memory allocations, asynchronous design, pure C99.
+
+## Features
+
+* Bytecode example apps written in C, Zig and Rust
+* Non-blocking design, preventing misbehaving bytecode from stalling the host
+* No assumptions about host IO capabilities (no stdio)
+* Simple, opinionated execution model
+* Safe minimalistic FFI
+* Small enough for "if this then that" scripts/plugins, capable enough for much more
+
+Check out the [apps](apps) folder for more.
+
+## Quickstart
+
+    make
+    emulator/emulator precompiled/mandel.bin
+
+Build one of the sample apps (requires docker for C, or Zig, or Rust)
+
+	cd apps/helloworld && make
+	
+Run the app
+
+	./emulator ../apps/helloworld/helloworld.bin
+
+## Quickstart API
+
+```c
+uint8_t bytecode[] = { /* ... */ }; // some compiled bytecode
+uvm32_state_t vmst; // execution state of the vm
+uvm32_evt_t evt; // events passed from vm to host
+
+uvm32_init(&vmst, NULL, 0); // setup vm and pass in handlers for host functions
+uvm32_load(&vmst, bytecode, sizeof(bytecode)); // load the bytecode
+uvm32_run(&vmst, &evt, 100); // run up to 100 instructions
+
+switch(evt.typ) {
+	// check why the vm stopped executing
+}
+```
+
+## Operation
+
+Once loaded with bytecode, uvm32's state is advanced by calling `uvm32_run()`.
+
+	uint32_t uvm32_run(uvm32_state_t *vmst, uvm32_evt_t *evt, uint32_t instr_meter)
+	
+`uvm32_run()` will execute until the bytecode requests some IO activity from the host.
+These IO activities are called "ioreqs" and are the only way for bytecode to communicate with the host.
+If the bytecode attempts to execute more instructions than the the passed value of `instr_meter` it is assumed to have crashed and an error is reported.
+
+(As with a watchdog on an embedded system, the `yield()` bytecode function tells the host that the code requires more time to complete and has not hung)
+
+`uvm32_run()` always returns an event. There are four possible events:
+
+* `UVM32_EVT_END` the program has ended
+* `UVM32_EVT_ERR` the program has encountered an error
+* `UVM32_EVT_YIELD` the program has called `yield()` signifying that it requires more instructions to be executed, but has not crashed/hung
+* `UVM32_EVT_IOREQ` the program requests some IO via the host
+
+## Internals
+
+uvm32 emulates a RISC-V 32bit CPU using [mini-rv32ima](https://github.com/cnlohr/mini-rv32ima). All IO from vm bytecode to the host is performed using [CSRs](https://five-embeddev.com/riscv-priv-isa-manual/Priv-v1.12/priv-csrs.html). Each "function" provided by the host requires a unique CSR value. A CSR passes a single `uint32_t` from bytecode to the host.
+
+uvm32 is always in one of 4 states, paused, running, ended or error.
+
+```mermaid
+stateDiagram
+    [*] --> UVM32_STATUS_PAUSED : uvm32_init()
+    UVM32_STATUS_PAUSED-->UVM32_STATUS_RUNNING : uvm32_run()
+    UVM32_STATUS_RUNNING --> UVM32_STATUS_PAUSED : ioreq event
+    UVM32_STATUS_RUNNING --> UVM32_STATUS_ENDED : halt()
+    UVM32_STATUS_RUNNING --> UVM32_STATUS_ERROR
+```
+
+
+## ioreqs
+
+There are two system ioreqs used by uvm32, `halt()` and `yield()`.
+
+`halt()` tells the host that the program has ended normally. `yield()` tells the host that the program requires more instructions to be executed.
+
+New ioreqs can be added to the host via `uvm32_init()`.
+Each ioreq maps a CSR number to a value understood by the host (`F_PRINTD` below) and has an associated type which tells the host how to interpret the data passed to the CSR.
+
+Here is a full example of a working VM host from [apps/emulator-mini](apps/emulator-mini)
+
+--
+
+	#include <stdio.h>
+	#include <string.h>
+	#include <stdlib.h>
+	#include "uvm32.h"
+	#include "../common/uvm32_common_custom.h"
+	
+	// Precompiled binary program to print integers
+	// This code expects to print via CSR 0x13C (IOREQ_PRINTD in common/uvm32_common_custom.h)
+	uint8_t rom[] = {
+	  0x23, 0x26, 0x11, 0x00, 0xef, 0x00, 0x00, 0x01, 0x73, 0x50, 0x80, 0x13,
+	  0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x93, 0x07, 0x00, 0x00,
+	  0x13, 0x07, 0xa0, 0x00, 0x73, 0x90, 0xc7, 0x13, 0x93, 0x87, 0x17, 0x00,
+	  0xe3, 0x9c, 0xe7, 0xfe, 0x67, 0x80, 0x00, 0x00
+	};
+	
+	// Create an identifier for our host handler
+	typedef enum {
+	    F_PRINTD,
+	} f_code_t;
+	
+	// Map VM ioreq IOREQ_PRINTD (0x13C) to F_PRINTD, tell VM to expect write of a U32
+	const uvm32_mapping_t env[] = {
+	    { .csr = IOREQ_PRINTD, .typ = IOREQ_TYP_U32_WR, .code = F_PRINTD },
+	};
+	
+	int main(int argc, char *argv[]) {
+	    uvm32_state_t vmst;
+	    uvm32_evt_t evt;
+	    bool isrunning = true;
+	
+	    uvm32_init(&vmst, env, sizeof(env) / sizeof(env[0]));
+	    uvm32_load(&vmst, rom, sizeof(rom));
+	
+	    while(isrunning) {
+	        uvm32_run(&vmst, &evt, 100);   // num instructions before vm considered hung
+	
+	        switch(evt.typ) {
+	            case UVM32_EVT_END:
+	                isrunning = false;
+	            break;
+	            case UVM32_EVT_IOREQ:    // vm has paused to handle IOREQ
+	                switch((f_code_t)evt.data.ioreq.code) {
+	                    case F_PRINTD:
+	                        // Type of F_PRINTD is IOREQ_TYP_U32_WR, so expect value in evt.data.ioreq.val.u32
+	                        printf("%d\n", evt.data.ioreq.val.u32);
+	                    break;
+	                }
+	            break;
+	            default:
+	            break;
+	        }
+	    }
+	
+	    return 0;
+	}
+
+## Samples
+
+ * [emulator](emulator) vm host which loads a binary and runs to completion, handling multiple ioreq types
+ * [emulator-mini](emulator-mini) minimal vm host (shown above), with baked in bytecode
+ * [emulator-parallel](emulator-parallel) parallel vm host running multiple vm instances concurrently, with baked in bytecode
+ * [apps/helloworld](apps/helloworld) C hello world program
+ * [apps/sketch](apps/sketch) C Arduino/Wiring/Processing type program in `setup()` and `loop()` style
+ * [apps/rust-hello](apps/rust-hello) Rust hello world program
+ * [apps/zig-mandel](apps/zig-mandel) Zig ASCII mandelbrot generator program
+
+## License
+
+This project is licensed under the MIT License. Feel free to use in research, products and embedded devices.
