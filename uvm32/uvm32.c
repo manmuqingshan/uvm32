@@ -46,7 +46,7 @@ void uvm32_init(uvm32_state_t *vmst, const uvm32_mapping_t *mappings, uint32_t n
     // setup stack pointer
     // la	sp, _sstack
     // addi	sp,sp,-16
-    vmst->core->regs[2] = (MINIRV32_RAM_IMAGE_OFFSET + UVM32_MEMORY_SIZE) - 16;
+    vmst->core->regs[2] = (MINIRV32_RAM_IMAGE_OFFSET + UVM32_MEMORY_SIZE - sizeof(struct MiniRV32IMAState)) - 16;
     vmst->core->regs[10] = 0x00;  //hart ID
     vmst->core->regs[11] = 0;
     vmst->core->extraflags |= 3;  // Machine-mode.
