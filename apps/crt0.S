@@ -1,5 +1,4 @@
 #include "uvm32_sys.h"
-#include "uvm32_common_custom.h"
 .section .initial_jump , "ax", %progbits
 .global _start
 .align 4

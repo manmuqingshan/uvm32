@@ -9,7 +9,7 @@ use core::panic::PanicInfo;
 include!(concat!(env!("OUT_DIR"), "/bindings.rs"));
 
 // startup code
-global_asm!(include_str!("../../crt0.S"));
+global_asm!(include_str!("../../crt0.S")/*, IOREQ_HALT = const IOREQ_HALT*/);
 
 fn syscall(id: u32, n: u32) -> u32 {
     let mut value;
