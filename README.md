@@ -101,7 +101,7 @@ stateDiagram
 
 ## Boot
 
-At boot, the whole memory is zeroed. The user program is placed at the start, the CPU registers are stored at the end. The stack pointer is set to the start of the CPU registers and grows downwards.
+At boot, the whole memory is zeroed. The user program is placed at the start. The stack pointer is set to the start of the CPU registers and grows downwards. No heap region is setup and all code is in RAM.
 
 ## syscall ABI
 
