@@ -12,8 +12,6 @@
 #define SCHEDULE_ROUNDROBIN()   scheduler_index = (scheduler_index + 1) % NUM_VM
 #define SCHEDULE_RANDOM()       scheduler_index = rand()%NUM_VM
 
-// Precompiled binary program to print integers
-// This code expects to print via syscall 0x13C (UVM32_SYSCALL_PRINTD in common/uvm32_common_custom.h)
 uint8_t rom[] = {   // fib.bin
   0x23, 0x26, 0x11, 0x00, 0xef, 0x00, 0x40, 0x17, 0xb7, 0x08, 0x00, 0x01,
   0x73, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x93, 0x08, 0x05, 0x00,
