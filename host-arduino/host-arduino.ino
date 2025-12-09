@@ -2,7 +2,6 @@
 #include "uvm32.h"
 #include "common/uvm32_common_custom.h"
 
-#if 0
 uint8_t rom[] = { // mandel.bin
   0x23, 0x26, 0x11, 0x00, 0xef, 0x00, 0xc0, 0x00, 0xb7, 0x08, 0x00, 0x01,
   0x73, 0x00, 0x00, 0x00, 0x13, 0x01, 0x01, 0xff, 0x23, 0x26, 0x81, 0x00,
@@ -28,9 +27,6 @@ uint8_t rom[] = { // mandel.bin
   0x67, 0x80, 0x00, 0x00, 0x48, 0x65, 0x6c, 0x6c, 0x6f, 0x20, 0x77, 0x6f,
   0x72, 0x6c, 0x64, 0x00
 };
-#else
-#include "zigtris.h"
-#endif
 
 uvm32_state_t vmst;
 uvm32_evt_t evt;
@@ -53,7 +49,7 @@ void loop(void) {
     }
 
     if (isrunning) {
-        uvm32_run(&vmst, &evt, 10000000);   // num instructions before vm considered hung
+        uvm32_run(&vmst, &evt, 0xFFFFFFFF);   // num instructions before vm considered hung
 
         switch(evt.typ) {
             case UVM32_EVT_END:
@@ -69,8 +65,17 @@ void loop(void) {
                         Serial.print(str);
                         Serial.println("");
                     } break;
+                    case UVM32_SYSCALL_PRINT: {
+                        const char *str = uvm32_getcstr(&vmst, &evt, ARG0);
+                        Serial.print(str);
+                    } break;
+                    case UVM32_SYSCALL_MILLIS: {
+                        uvm32_setval(&vmst, &evt, RET, millis());
+                    } break;
                     default:
-                        Serial.println("Unhandled syscall");
+                        Serial.print("Unhandled syscall: ");
+                        Serial.print(evt.data.syscall.code);
+                        Serial.println("");
                     break;
                 }
             break;
