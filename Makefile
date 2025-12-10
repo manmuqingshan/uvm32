@@ -27,6 +27,6 @@ dockershell:
 	docker run -v `pwd`:/data -w /data --rm -ti uvm32 /bin/bash
 
 docker:
-	docker run -v `pwd`:/data -w /data --rm -ti uvm32 make
+	docker run -v `pwd`:/data -w /data --rm uvm32 make
 
 
