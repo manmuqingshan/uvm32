@@ -56,7 +56,7 @@ static uint32_t syscall(uint32_t id, uint32_t param1, uint32_t param2) {
 #define millis()        syscall_cast(UVM32_SYSCALL_MILLIS, 0, 0)
 #define putc(x)         syscall_cast(UVM32_SYSCALL_PUTC, x, 0)
 #define getc()          syscall_cast(UVM32_SYSCALL_GETC, 0, 0)
-#define yield()         syscall_cast(UVM32_SYSCALL_YIELD, 0, 0)
+#define yield(x)        syscall_cast(UVM32_SYSCALL_YIELD, x, 0)
 #define printbuf(x, y)  syscall_cast(UVM32_SYSCALL_PRINTBUF, x, y)
 
 extern char _estack;

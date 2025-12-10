@@ -170,14 +170,10 @@ uint32_t uvm32_run(uvm32_state_t *vmst, uvm32_evt_t *evt, uint32_t instr_meter) 
                  case UVM32_SYSCALL_HALT:
                     setStatus(vmst, UVM32_STATUS_ENDED);
                 break;
-                case UVM32_SYSCALL_YIELD:
-                    vmst->ioevt.typ = UVM32_EVT_YIELD;
-                    setStatus(vmst, UVM32_STATUS_PAUSED);
-                break;
                 case UVM32_SYSCALL_STACKPROTECT: {
                     // don't allow errant code to change it once set
                     if (vmst->stack_canary == (uint8_t *)UVM32_NULL) {
-                        uint32_t param0 = vmst->core.regs[10];
+                        uint32_t param0 = vmst->core.regs[10]; // a0
                         uint32_t mem_offset = param0 - MINIRV32_RAM_IMAGE_OFFSET;
 
                         // check data fits in ram

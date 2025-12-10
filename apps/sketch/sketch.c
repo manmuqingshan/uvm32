@@ -25,7 +25,7 @@ void setup(void) {
 void main(void) {
     setup();
     while(loop()) {
-        yield();
+        yield(0);
     }
 }
 

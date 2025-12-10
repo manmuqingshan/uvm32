@@ -167,10 +167,6 @@ int main(int argc, char *argv[]) {
                 printf("UVM32_EVT_END\n");
                 isrunning = false;
             break;
-            case UVM32_EVT_YIELD:
-                //printf("UVM32_EVT_YIELD\n");
-                // program has paused, but no syscall
-            break;
             case UVM32_EVT_ERR:
                 printf("UVM32_EVT_ERR '%s' (%d)\n", evt.data.err.errstr, (int)evt.data.err.errcode);
                 if (evt.data.err.errcode == UVM32_ERR_HUNG) {
@@ -186,6 +182,11 @@ int main(int argc, char *argv[]) {
                         while(buf.len--) {
                             printf("%02x", *buf.ptr++);
                         }
+                    } break;
+                    case UVM32_SYSCALL_YIELD: {
+                        // uint32_t yield_typ = uvm32_getval(&vmst, &evt, ARG0);
+                        // printf("YIELD type=%d\n", yield_typ);
+                        // uvm32_setval(&vmst, &evt, RET, 123);
                     } break;
                     case UVM32_SYSCALL_PRINT: {
                         const char *str = uvm32_getcstr(&vmst, &evt, ARG0);

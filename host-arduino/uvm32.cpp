@@ -1,4 +1,5 @@
 #include "config.h"
+
 #define MINIRV32_IMPLEMENTATION
 #include "uvm32.h"
 
@@ -10,6 +11,9 @@
 
 // On an invalid operation, an error is set in uvm32_state_t, but a valid pointer still needs to be temporarily used
 static uint32_t garbage;
+
+// magic value for stack canary
+#define STACK_CANARY_VALUE 0x42
 
 #ifndef UVM32_MEMCPY
 #define UVM32_MEMCPY uvm32_memcpy
@@ -85,6 +89,8 @@ bool uvm32_load(uvm32_state_t *vmst, const uint8_t *rom, int len) {
     }
 
     UVM32_MEMCPY(vmst->memory, rom, len);
+    vmst->stack_canary = (uint8_t *)UVM32_NULL;
+    
     return true;
 }
 
@@ -136,6 +142,12 @@ void uvm32_clearError(uvm32_state_t *vmst) {
 uint32_t uvm32_run(uvm32_state_t *vmst, uvm32_evt_t *evt, uint32_t instr_meter) {
     uint32_t num_instr = 0;
 
+    if (vmst->stack_canary != UVM32_NULL && *vmst->stack_canary != STACK_CANARY_VALUE) {
+        setStatusErr(vmst, UVM32_ERR_STACKOVERFLOW);
+        setup_err_evt(vmst, evt);
+        return num_instr;
+    }
+
     if (vmst->status != UVM32_STATUS_PAUSED) {
         setStatusErr(vmst, UVM32_ERR_NOTREADY);
         setup_err_evt(vmst, evt);
@@ -160,10 +172,25 @@ uint32_t uvm32_run(uvm32_state_t *vmst, uvm32_evt_t *evt, uint32_t instr_meter) 
                  case UVM32_SYSCALL_HALT:
                     setStatus(vmst, UVM32_STATUS_ENDED);
                 break;
-                case UVM32_SYSCALL_YIELD:
-                    vmst->ioevt.typ = UVM32_EVT_YIELD;
-                    setStatus(vmst, UVM32_STATUS_PAUSED);
-                break;
+                case UVM32_SYSCALL_STACKPROTECT: {
+                    // don't allow errant code to change it once set
+                    if (vmst->stack_canary == (uint8_t *)UVM32_NULL) {
+                        uint32_t param0 = vmst->core.regs[10]; // a0
+                        uint32_t mem_offset = param0 - MINIRV32_RAM_IMAGE_OFFSET;
+
+                        // check data fits in ram
+                        if (mem_offset > UVM32_MEMORY_SIZE) {
+                            setStatusErr(vmst, UVM32_ERR_STACKOVERFLOW);
+                            setup_err_evt(vmst, evt);
+                        }
+                        // check canary is inside valid memory
+                        if (mem_offset < UVM32_MEMORY_SIZE) {
+                            // set canary
+                            vmst->stack_canary = &vmst->memory[mem_offset];
+                            *vmst->stack_canary = STACK_CANARY_VALUE;
+                        }
+                    }
+                } break;
                 default:
                     // user defined syscalls
                     vmst->ioevt.typ = UVM32_EVT_SYSCALL;

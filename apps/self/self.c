@@ -45,6 +45,8 @@ void main(void) {
             break;
             case UVM32_EVT_SYSCALL:    // vm has paused to handle UVM32_SYSCALL
                 switch(evt.data.syscall.code) {
+                    case UVM32_SYSCALL_YIELD:
+                    break;
                     case UVM32_SYSCALL_PUTC:
                         putc(uvm32_getval(&vmst, &evt, ARG0));
                     break;

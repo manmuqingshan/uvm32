@@ -203,6 +203,46 @@ The following functions are used to access syscall parameters safely:
     void uvm32_setval(uvm32_state_t *vmst, uvm32_evt_t *evt, uvm32_arg_t, uint32_t val);
     uvm32_evt_syscall_buf_t uvm32_getbuf(uvm32_state_t *vmst, uvm32_evt_t *evt, uvm32_arg_t argPtr, uvm32_arg_t argLen);
 
+## Event driven operation
+
+A useful pattern for code running in the VM is to be event-driven. In this setup the program requests blocks until woken up with a reason. This requires some support in the host, but can be implemented as follows.
+
+In the VM code:
+
+```c
+while(1) {
+    // ask host to suspend running until one of the following events
+    uint32_t wakeReason = yield(KEYPRESS_EVENT_MASK | MOUSE_EVENT_MASK | NETWORK_EVENT_MASK);
+    switch(wakeReason) {
+        ...
+    }
+}
+```
+
+In the host code:
+
+```c
+uvm32_run(&vmst, &evt, 1000);
+switch(evt.typ) {
+    case UVM32_EVT_SYSCALL:
+        switch(evt.data.syscall.code) {
+            case UVM32_SYSCALL_YIELD:
+                uint32_t events = uvm32_getval(&vmst, &evt, ARG0);
+                // do not call uvm32_run() again until something in the events set is triggered
+            break;
+            ...
+        }
+    break;
+    ...
+}
+```
+
+Then, to wake the VM once an (eg. key) event has occurred
+
+```c
+uvm32_setval(&vmst, &evt, RET, KEYPRESS_EVENT_MASK);
+uvm32_run(&vmst, &evt, 1000);
+```
 
 ## Configuration
 

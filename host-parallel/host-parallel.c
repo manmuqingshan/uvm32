@@ -81,6 +81,8 @@ int main(int argc, char *argv[]) {
             break;
             case UVM32_EVT_SYSCALL:    // vm has paused to handle UVM32_SYSCALL
                 switch(evt.data.syscall.code) {
+                    case UVM32_SYSCALL_YIELD:
+                    break;
                     case UVM32_SYSCALL_PRINTLN: {
                         const char *str = uvm32_getcstr(&vmst[scheduler_index], &evt, ARG0);
                         if (str[0] != 0) {

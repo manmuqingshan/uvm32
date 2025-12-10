@@ -13,13 +13,6 @@ void movecursor(int x, int y) {
     print("f");
 }
 
-void sleep(uint32_t ms) {
-    uint32_t start = millis();
-    while (millis() < start + ms) {
-        yield();
-    }
-}
-
 // Absolute value function for doubles
 double abs_c(double x) {
     if (x < 0) {
@@ -116,7 +109,7 @@ void main(void) {
 
         // wait for next frame
         while (millis() < framestart + (1000 / 30)) {
-            yield();
+            yield(0);
         }
         beta += 0.05;
         freq1 += 0.01;
