@@ -193,6 +193,7 @@ int main(int argc, char *argv[]) {
                 } else {
                     isrunning = false;
                     memdump("host-ram.dump", vmst.memory, UVM32_MEMORY_SIZE);
+                    printf("memory dumped to host-ram.dump, pc=0x%08x\n", vmst.core.pc);
                 }
             break;
             case UVM32_EVT_SYSCALL:
