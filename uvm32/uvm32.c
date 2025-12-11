@@ -70,7 +70,7 @@ void uvm32_init(uvm32_state_t *vmst) {
     vmst->status = UVM32_STATUS_PAUSED;
 
     vmst->extramLen = 0;
-    vmst->extram = UVM32_NULL;
+    vmst->extram = (uint32_t *)UVM32_NULL;
     vmst->extramDirty = false;
 
     vmst->core.pc = MINIRV32_RAM_IMAGE_OFFSET;
