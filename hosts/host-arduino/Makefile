@@ -1,4 +1,4 @@
-TOPDIR=../../
+TOPDIR=../..
 
 # Auto-generate the Arduino example
 # Arduino cannot set -DUVM32_MEMORY_SIZE, so add a config file

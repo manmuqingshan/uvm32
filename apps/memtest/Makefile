@@ -1,4 +1,4 @@
-TOPDIR=../../
+TOPDIR=../..
 PROJECT:=$(shell basename ${PWD})
 
 HEAP_SIZE=$(shell echo "1024 * 1024 * 32" | bc)

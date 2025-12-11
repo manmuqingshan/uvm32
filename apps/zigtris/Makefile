@@ -1,5 +1,5 @@
 PROJECT=zigtris
-TOPDIR=../../
+TOPDIR=../..
 
 all:
 	@# zig's objcopy is broken, so use external tool

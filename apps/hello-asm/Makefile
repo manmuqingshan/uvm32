@@ -1,4 +1,4 @@
-TOPDIR=../../
+TOPDIR=../..
 PROJECT:=hello-asm
 SRCS=${PROJECT}.S
 all: all_common

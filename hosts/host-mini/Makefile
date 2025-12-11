@@ -1,4 +1,4 @@
-TOPDIR=../../
+TOPDIR=../..
 
 all:
 	xxd -n mandel -i ${TOPDIR}/precompiled/mandel.bin | sed -e "s/unsigned char/const unsigned char/" > mandel.h

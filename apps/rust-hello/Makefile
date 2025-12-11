@@ -1,5 +1,5 @@
 PROJECT=rust-hello
-TOPDIR=../../
+TOPDIR=../..
 
 all:
 	cargo build -r --target riscv32im-unknown-none-elf && ${PREFIX}objcopy target/riscv32im-unknown-none-elf/release/${PROJECT} -O binary ${PROJECT}.bin
