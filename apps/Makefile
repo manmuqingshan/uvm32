@@ -1,5 +1,6 @@
 all:
 	(cd sketch && make)
+	(cd fib && make)
 	(cd helloworld && make)
 	(cd lissajous && make)
 	(cd conio && make)
@@ -12,6 +13,7 @@ all:
 
 clean:
 	(cd sketch && make clean)
+	(cd fib && make clean)
 	(cd helloworld && make clean)
 	(cd lissajous && make clean)
 	(cd conio && make clean)
