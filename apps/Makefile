@@ -12,6 +12,7 @@ all:
 	(cd maze && make)
 	(cd heap && make)
 	(cd memtest && make)
+	(cd zigalloc && make)
 
 clean:
 	(cd sketch && make clean)
@@ -27,4 +28,5 @@ clean:
 	(cd maze && make clean)
 	(cd heap && make clean)
 	(cd memtest && make clean)
+	(cd zigalloc && make clean)
 

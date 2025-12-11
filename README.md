@@ -100,6 +100,8 @@ int main(int argc, char *argv[]) {
  * [apps/rust-hello](apps/rust-hello) Rust hello world program (note, the version of rust installed by brew on mac has issues, use the official rust installer from https://rust-lang.org/learn/get-started/)
  * [apps/zig-mandel](apps/zig-mandel) Zig ASCII mandelbrot generator program
  * [apps/zigtris](apps/zigtris) Zig Tetris (https://github.com/ringtailsoftware/zigtris)
+ * [apps/zigalloc](apps/zigalloc) Demonstration of using extram with zig allocator
+ * [apps/heap](apps/heap) Demonstration of `malloc()` on extram in C
 
 ## Quickstart (docker)
 
