@@ -70,6 +70,4 @@ void loop(void) {
         uvm32_load(&vmst, ___precompiled_mandel_bin, ___precompiled_mandel_bin_len);
         isrunning = true;
     }
-
-    return;
 }
