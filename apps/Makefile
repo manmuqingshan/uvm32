@@ -10,6 +10,8 @@ all:
 	(cd rust-hello && make)
 	(cd hello-asm && make)
 	(cd maze && make)
+	(cd heap && make)
+	(cd memtest && make)
 
 clean:
 	(cd sketch && make clean)
@@ -23,4 +25,6 @@ clean:
 	(cd rust-hello && make clean)
 	(cd hello-asm && make clean)
 	(cd maze && make clean)
+	(cd heap && make clean)
+	(cd memtest && make clean)
 
