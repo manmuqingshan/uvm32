@@ -158,7 +158,7 @@ void test_extram_short_write(void) {
 
     // check that short 7 only of extram has changed
     uint16_t *p = (uint16_t *)extram;
-    for (int i=0;i<sizeof(extram);i++) {
+    for (int i=0;i<sizeof(extram)/2;i++) {
         if (i == 7) {
             TEST_ASSERT_EQUAL(0xABCD, p[i]);
         } else {
