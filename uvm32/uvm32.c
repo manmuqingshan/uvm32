@@ -149,6 +149,7 @@ uint32_t uvm32_run(uvm32_state_t *vmst, uvm32_evt_t *evt, uint32_t instr_meter) 
 
     if (instr_meter < min_instrs) {
         instr_meter = min_instrs;
+        orig_instr_meter = min_instrs;
     }
 
     if (vmst->stack_canary != UVM32_NULL && *vmst->stack_canary != STACK_CANARY_VALUE) {

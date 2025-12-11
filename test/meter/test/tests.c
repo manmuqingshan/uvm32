@@ -20,11 +20,12 @@ void tearDown(void) {
 // run program until printdec() reaches 100
 // every time it hangs, resume
 // run in batches of num_instr
-void metered_run(uint32_t num_instr) {
+uint32_t metered_run(uint32_t num_instr) {
     uint32_t expected = 0;
+    uint32_t total_instr = 0;
 
     while(expected < 100) {
-        uvm32_run(&vmst, &evt, num_instr);
+        total_instr += uvm32_run(&vmst, &evt, num_instr);
         switch(evt.typ) {
             case UVM32_EVT_SYSCALL: {
                 TEST_ASSERT_EQUAL(UVM32_SYSCALL_PRINTDEC, evt.data.syscall.code);
@@ -43,16 +44,24 @@ void metered_run(uint32_t num_instr) {
     }
 
     // run vm to completion
-    uvm32_run(&vmst, &evt, 10000);
+    total_instr += uvm32_run(&vmst, &evt, 10000);
     TEST_ASSERT_EQUAL(evt.typ, UVM32_EVT_END);
+    return total_instr;
 }
 
 void test_meter(void) {
     // test many different meter values, including 0 (which should run 1 instruction, as 0 is going to hang)
+    uint32_t total_instr = 0;
+
     for (uint32_t i=0;i<1000;i++) {
         uvm32_init(&vmst);
         uvm32_load(&vmst, rom_bin, rom_bin_len);
-        metered_run(i);
+        uint32_t instrs = metered_run(i);
+        if (total_instr == 0) {    // first run
+            total_instr = instrs;
+        } else {
+            TEST_ASSERT_EQUAL(total_instr, instrs); // check that every run takes the total number of instructions
+        }
     }
 }
 
