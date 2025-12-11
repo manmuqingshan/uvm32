@@ -97,3 +97,96 @@ void test_extram_out_of_bounds_dirty_flag(void) {
     TEST_ASSERT_EQUAL(false, uvm32_extramDirty(&vmst));
 }
 
+void test_extram_byte_write(void) {
+    // run the vm
+    uvm32_run(&vmst, &evt, 100);
+    TEST_ASSERT_EQUAL(false, uvm32_extramDirty(&vmst));
+
+    // check for picktest syscall
+    TEST_ASSERT_EQUAL(evt.typ, UVM32_EVT_SYSCALL);
+    TEST_ASSERT_EQUAL(evt.data.syscall.code, SYSCALL_PICKTEST);
+    uvm32_setval(&vmst, &evt, RET, TEST5);
+
+    uvm32_run(&vmst, &evt, 100);
+    TEST_ASSERT_EQUAL(true, uvm32_extramDirty(&vmst));
+
+    // check that byte 7 only of extram has changed
+    uint8_t *p = (uint8_t *)extram;
+    for (int i=0;i<sizeof(extram);i++) {
+        if (i == 7) {
+            TEST_ASSERT_EQUAL(0xAB, p[i]);
+        } else {
+            TEST_ASSERT_EQUAL(0x00, p[i]);
+        }
+    }
+}
+
+void test_extram_byte_read(void) {
+    // run the vm
+    uvm32_run(&vmst, &evt, 100);
+    TEST_ASSERT_EQUAL(false, uvm32_extramDirty(&vmst));
+
+    // check for picktest syscall
+    TEST_ASSERT_EQUAL(evt.typ, UVM32_EVT_SYSCALL);
+    TEST_ASSERT_EQUAL(evt.data.syscall.code, SYSCALL_PICKTEST);
+    uvm32_setval(&vmst, &evt, RET, TEST6);
+
+    // set only byte 7 in extram
+    uint8_t *p = (uint8_t *)extram;
+    p[7] = 0xCD;
+
+    uvm32_run(&vmst, &evt, 100);
+    TEST_ASSERT_EQUAL(false, uvm32_extramDirty(&vmst));
+    // check for printdec of val
+    TEST_ASSERT_EQUAL(UVM32_EVT_SYSCALL, evt.typ);
+    TEST_ASSERT_EQUAL(evt.data.syscall.code, UVM32_SYSCALL_PRINTDEC);
+    TEST_ASSERT_EQUAL(0xCD, uvm32_getval(&vmst, &evt, ARG0));
+}
+
+void test_extram_short_write(void) {
+    // run the vm
+    uvm32_run(&vmst, &evt, 100);
+    TEST_ASSERT_EQUAL(false, uvm32_extramDirty(&vmst));
+
+    // check for picktest syscall
+    TEST_ASSERT_EQUAL(evt.typ, UVM32_EVT_SYSCALL);
+    TEST_ASSERT_EQUAL(evt.data.syscall.code, SYSCALL_PICKTEST);
+    uvm32_setval(&vmst, &evt, RET, TEST7);
+
+    uvm32_run(&vmst, &evt, 100);
+    TEST_ASSERT_EQUAL(true, uvm32_extramDirty(&vmst));
+
+    // check that short 7 only of extram has changed
+    uint16_t *p = (uint16_t *)extram;
+    for (int i=0;i<sizeof(extram);i++) {
+        if (i == 7) {
+            TEST_ASSERT_EQUAL(0xABCD, p[i]);
+        } else {
+            TEST_ASSERT_EQUAL(0x00, p[i]);
+        }
+    }
+}
+
+void test_extram_short_read(void) {
+    // run the vm
+    uvm32_run(&vmst, &evt, 100);
+    TEST_ASSERT_EQUAL(false, uvm32_extramDirty(&vmst));
+
+    // check for picktest syscall
+    TEST_ASSERT_EQUAL(evt.typ, UVM32_EVT_SYSCALL);
+    TEST_ASSERT_EQUAL(evt.data.syscall.code, SYSCALL_PICKTEST);
+    uvm32_setval(&vmst, &evt, RET, TEST8);
+
+    // set only short 7 in extram
+    uint16_t *p = (uint16_t *)extram;
+    p[7] = 0xCDEF;
+
+    uvm32_run(&vmst, &evt, 100);
+    TEST_ASSERT_EQUAL(false, uvm32_extramDirty(&vmst));
+    // check for printdec of val
+    TEST_ASSERT_EQUAL(UVM32_EVT_SYSCALL, evt.typ);
+    TEST_ASSERT_EQUAL(evt.data.syscall.code, UVM32_SYSCALL_PRINTDEC);
+    TEST_ASSERT_EQUAL(0xCDEF, uvm32_getval(&vmst, &evt, ARG0));
+}
+
+

@@ -13,19 +13,36 @@ void main(void) {
         } break;
         case TEST2: {
             uint32_t *p = (uint32_t *)UVM32_EXTRAM_BASE;
-            printdec(p[32]);   // past the end
+            printdec(p[32]);   // word read
         } break;
         case TEST3: {
             uint32_t *p = (uint32_t *)UVM32_EXTRAM_BASE;
-            p[32] = 1234;   // past the end
+            p[32] = 1234;   // past the end, out of bounds
         } break;
         case TEST4: {
             uint32_t *p = (uint32_t *)UVM32_EXTRAM_BASE;
-            p[0] = 1234; // good write
+            p[0] = 1234; // word write
             yield(0);
+        } break;
+        case TEST5: {
+            uint8_t *p = (uint8_t *)UVM32_EXTRAM_BASE;
+            p[7] = 0xAB; // single byte write
+            yield(0);
+        } break;
+        case TEST6: {
+            uint8_t *p = (uint8_t *)UVM32_EXTRAM_BASE;
+            printdec(p[7]); // single byte read 
+        } break;
+        case TEST7: {
+            uint16_t *p = (uint16_t *)UVM32_EXTRAM_BASE;
+            p[7] = 0xABCD; // short write
+            yield(0);
+        } break;
+        case TEST8: {
+            uint16_t *p = (uint16_t *)UVM32_EXTRAM_BASE;
+            printdec(p[7]); // short read
         } break;
 
     }
-
 }
 

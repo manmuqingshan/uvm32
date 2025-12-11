@@ -326,12 +326,34 @@ uvm32_evt_syscall_buf_t uvm32_getbuf_fixed(uvm32_state_t *vmst, uvm32_evt_t *evt
     return scb;
 }
 
-uint32_t uvm32_extramLoad(void *userdata, uint32_t addr) {
+uint32_t uvm32_extramLoad(void *userdata, uint32_t addr, uint32_t accessTyp) {
+
     uvm32_state_t *vmst = (uvm32_state_t *)userdata;
     addr -= UVM32_EXTRAM_BASE;
+
     if (vmst->extram != UVM32_NULL) {
         if (addr < vmst->extramLen) {
-            return ((uint32_t *)vmst->extram)[addr / 4];
+            switch(accessTyp) {
+                case 0:
+                    return ((int8_t *)vmst->extram)[addr];
+                break;
+                case 1:
+                    return ((int16_t *)vmst->extram)[addr/2];
+                break;
+                case 2:
+                    return ((uint32_t *)vmst->extram)[addr / 4];
+                break;
+                case 4:
+                    return ((uint8_t *)vmst->extram)[addr];
+                break;
+                case 5:
+                    return ((uint16_t *)vmst->extram)[addr/2];
+                break;
+                default:
+                    setStatusErr(vmst, UVM32_ERR_MEM_RD);
+                    return 0;
+                break;
+            }
         } else {
             setStatusErr(vmst, UVM32_ERR_MEM_RD);
         }
@@ -339,12 +361,25 @@ uint32_t uvm32_extramLoad(void *userdata, uint32_t addr) {
     return 0;
 }
 
-uint32_t uvm32_extramStore(void *userdata, uint32_t addr, uint32_t val ) {
+uint32_t uvm32_extramStore(void *userdata, uint32_t addr, uint32_t val, uint32_t accessTyp) {
     uvm32_state_t *vmst = (uvm32_state_t *)userdata;
     addr -= UVM32_EXTRAM_BASE;
     if (vmst->extram != UVM32_NULL) {
         if (addr < vmst->extramLen) {
-            ((uint32_t *)vmst->extram)[addr / 4] = val;
+            switch(accessTyp) {
+                case 0:
+                    ((uint8_t *)vmst->extram)[addr] = val;
+                break;
+                case 1:
+                    ((uint16_t *)vmst->extram)[addr/2] = val;
+                break;
+                case 2:
+                    ((uint32_t *)vmst->extram)[addr/4] = val;
+                break;
+                default:
+                    setStatusErr(vmst, UVM32_ERR_MEM_WR);
+                break;
+            }
             vmst->extramDirty = true;
         } else {
             setStatusErr(vmst, UVM32_ERR_MEM_WR);

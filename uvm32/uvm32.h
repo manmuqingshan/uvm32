@@ -55,10 +55,10 @@ typedef struct {
 #define MINIRV32_DECORATE static
 #define MINI_RV32_RAM_SIZE UVM32_MEMORY_SIZE
 #define MINIRV32_POSTEXEC(pc, ir, retval) {if (retval > 0) return retval;}
-uint32_t uvm32_extramLoad(void *userdata, uint32_t addr);
-uint32_t uvm32_extramStore(void *userdata, uint32_t addr, uint32_t val);
-#define MINIRV32_HANDLE_MEM_LOAD_CONTROL( addy, rval ) rval = uvm32_extramLoad(userdata, addy);
-#define MINIRV32_HANDLE_MEM_STORE_CONTROL( addy, val ) if( uvm32_extramStore(userdata, addy, val) ) return val;
+uint32_t uvm32_extramLoad(void *userdata, uint32_t addr, uint32_t accessTyp);
+uint32_t uvm32_extramStore(void *userdata, uint32_t addr, uint32_t val, uint32_t accessTyp);
+#define MINIRV32_HANDLE_MEM_LOAD_CONTROL( addy, rval ) rval = uvm32_extramLoad(userdata, addy, ( ir >> 12 ) & 0x7);
+#define MINIRV32_HANDLE_MEM_STORE_CONTROL( addy, val ) if( uvm32_extramStore(userdata, addy, val, ( ir >> 12 ) & 0x7) ) return val;
 
 #ifndef MINIRV32_IMPLEMENTATION
 #define MINIRV32_STEPPROTO
