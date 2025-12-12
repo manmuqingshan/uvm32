@@ -1,6 +1,6 @@
 PREFIX:=riscv64-elf-
 OPT ?= -Os
-CFLAGS+=-I${TOPDIR}/common
+CFLAGS+=-I${TOPDIR}/common -I${TOPDIR}/apps/common
 CFLAGS+=${OPT} -fno-stack-protector -fno-builtin-memcpy -fno-builtin
 CFLAGS+=-static-libgcc -fdata-sections -ffunction-sections
 CFLAGS+=-g -march=rv32im -mabi=ilp32 -static

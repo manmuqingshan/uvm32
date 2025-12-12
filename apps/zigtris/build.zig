@@ -55,6 +55,7 @@ pub fn build(b: *std.Build) void {
     exe.addAssemblyFile(b.path("../common/crt0.S"));
     exe.setLinkerScript(b.path("../common/linker.ld"));
     exe.addIncludePath(b.path("../../common"));
+    exe.addIncludePath(b.path("../common"));
 
     const bin = b.addObjCopy(exe.getEmittedBin(), .{
         .format = .bin,
