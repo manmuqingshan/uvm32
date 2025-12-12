@@ -16,7 +16,7 @@ void setUp(void) {
     uvm32_init(&vmst);
     uvm32_load(&vmst, rom_bin, rom_bin_len);
     memset(extram, 0x00, sizeof(extram));
-    uvm32_extram(&vmst, extram, sizeof(extram));
+    uvm32_extram(&vmst, (uint8_t *)extram, sizeof(extram));
 }
 
 void tearDown(void) {

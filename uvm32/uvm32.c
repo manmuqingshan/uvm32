@@ -80,7 +80,7 @@ void uvm32_init(uvm32_state_t *vmst) {
     vmst->_status = UVM32_STATUS_PAUSED;
 
     vmst->_extramLen = 0;
-    vmst->_extram = (uint32_t *)NULL;
+    vmst->_extram = (uint8_t *)NULL;
     vmst->_extramDirty = false;
 
     vmst->_core.pc = MINIRV32_RAM_IMAGE_OFFSET;
@@ -130,7 +130,7 @@ bool get_safeptr_null_terminated(uvm32_state_t *vmst, uint32_t addr, uvm32_slice
                     return false;
                 }
             }
-            buf->ptr = (uint8_t *)&vmst->_extram[ptrstart/4];    // extram is uint32_t*
+            buf->ptr = (uint8_t *)&vmst->_extram[ptrstart];
             buf->len = p - ptrstart;
             return true;
         }
@@ -170,7 +170,7 @@ bool get_safeptr(uvm32_state_t *vmst, uint32_t addr, uint32_t len, uvm32_slice_t
                 buf->len = 0;
                 return false;
             }
-            buf->ptr = (uint8_t *)&vmst->_extram[ptrstart/4];    // extram is uint32_t*
+            buf->ptr = (uint8_t *)&vmst->_extram[ptrstart];
             buf->len = len;
             return true;
         }
@@ -444,7 +444,7 @@ uint32_t _uvm32_extramStore(void *userdata, uint32_t addr, uint32_t val, uint32_
 	return 0;
 }
 
-void uvm32_extram(uvm32_state_t *vmst, uint32_t *ram, uint32_t len) {
+void uvm32_extram(uvm32_state_t *vmst, uint8_t *ram, uint32_t len) {
     vmst->_extram = ram;
     vmst->_extramLen = len;
 }

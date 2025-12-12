@@ -204,7 +204,7 @@ int main(int argc, char *argv[]) {
             return 1;
         }
         memset(extram_buf, 0x00, extram_len);
-        uvm32_extram(&vmst, extram_buf, extram_len);
+        uvm32_extram(&vmst, (uint8_t *)extram_buf, extram_len);
     }
 
     // setup terminal for getch()

@@ -119,7 +119,7 @@ typedef struct {
     uint8_t _memory[UVM32_MEMORY_SIZE];     /*! Memory */
     uvm32_evt_t _ioevt;                     /*! Event to be returned on next pause */
     uint8_t *_stack_canary;                 /*! Location of stack canary */
-    uint32_t *_extram;                      /*! External RAM pointer, or NULL */
+    uint8_t *_extram;                       /*! External RAM pointer, or NULL */
     uint32_t _extramLen;                    /*! Length of external RAM */
     bool _extramDirty;                      /*! Flag to indicate VM code has modified extram since last run */
 } uvm32_state_t;
@@ -168,8 +168,8 @@ uvm32_slice_t uvm32_arg_getbuf(uvm32_state_t *vmst, uvm32_evt_t *evt, uvm32_arg_
 uvm32_slice_t uvm32_arg_getbuf_fixed(uvm32_state_t *vmst, uvm32_evt_t *evt, uvm32_arg_t arg, uint32_t len);
 
 
-/*! Setup a block of memory to act as external RAM, it will be available on in VM code at address `UVM32_EXTRAM_BASE`. The memory is not copied, so the caller must ensure it remains available until `uvm32_extram()` is called to setup a different region or the VM is ended */
-void uvm32_extram(uvm32_state_t *vmst, uint32_t *ram, uint32_t len);
+/*! Setup a block of memory to act as external RAM, it will be available on in VM code at address `UVM32_EXTRAM_BASE`. The memory is not copied, so the caller must ensure it remains available until `uvm32_extram()` is called to setup a different region or the VM is ended. */
+void uvm32_extram(uvm32_state_t *vmst, uint8_t *extram, uint32_t len);
 
 /*! Check to see if the external RAM is marked as dirty. If the VM code writes to the external RAM, this flag is set. The flag is automatically cleared next time uvm32_run() is called */
 bool uvm32_extramDirty(uvm32_state_t *vmst);
