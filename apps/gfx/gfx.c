@@ -19,7 +19,10 @@ void main(void) {
                 framebuffer[y * WIDTH + x] = (r << 24) | (g << 16) | (b << 8) | 0xFF;
             }
         }
-        printdec(framecount++);
-        println("");
+        framecount++;
+        if (framecount % 2 == 0) {
+            printdec(framecount++);
+            println("");
+        }
     }
 }
