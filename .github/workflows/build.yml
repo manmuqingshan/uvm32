@@ -28,4 +28,9 @@ jobs:
           indicators: true
           output: both
           thresholds: '60 80'
+      - name: Archive code coverage results
+        uses: actions/upload-artifact@v4
+        with:
+          name: code-coverage-report
+          path: uvm32/test/code-coverage-results.md
 
