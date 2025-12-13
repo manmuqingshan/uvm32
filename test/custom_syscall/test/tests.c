@@ -59,4 +59,19 @@ void test_custom_syscall_badval(void) {
     TEST_ASSERT_EQUAL(evt.typ, UVM32_EVT_END);
 }
 
+void test_custom_syscall_badarg(void) {
+    // run the vm
+    uvm32_run(&vmst, &evt, 100);
+    // check for custom syscall
+    TEST_ASSERT_EQUAL(evt.typ, UVM32_EVT_SYSCALL);
+    TEST_ASSERT_EQUAL(evt.data.syscall.code, 0xDEADBEEF);
+    TEST_ASSERT_EQUAL(0, uvm32_arg_getval(&vmst, &evt, (uvm32_arg_t)123));   // not ARG0, ARG1 or RET
+
+    // check for error state
+    uvm32_run(&vmst, &evt, 100);
+    TEST_ASSERT_EQUAL(evt.typ, UVM32_EVT_ERR);
+    TEST_ASSERT_EQUAL(evt.data.err.errcode, UVM32_ERR_ARGS);
+
+}
+
 
