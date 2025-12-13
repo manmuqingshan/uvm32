@@ -18,6 +18,8 @@ void tearDown(void) {
 }
 
 void test_syscalls(void) {
+    TEST_ASSERT_EQUAL(0x80000000, uvm32_getProgramCounter(&vmst));
+
     // check for println syscall
     uvm32_run(&vmst, &evt, 1000);
     TEST_ASSERT_EQUAL(evt.typ, UVM32_EVT_SYSCALL);
@@ -55,6 +57,8 @@ void test_syscalls(void) {
     TEST_ASSERT_EQUAL(true, uvm32_hasEnded(&vmst));
 
     TEST_ASSERT_EQUAL(vmst._memory, uvm32_getMemory(&vmst));
+    TEST_ASSERT_NOT_EQUAL(0x80000000, uvm32_getProgramCounter(&vmst));
+
 }
 
 
