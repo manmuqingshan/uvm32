@@ -6,6 +6,8 @@ On an [STM32L0](https://www.st.com/en/microcontrollers-microprocessors/stm32l0-s
 
 uvm32 is a RISC-V emulator, wrapped in a management interface and provided with tools to build efficient code to run in it.
 
+![](https://github.com/ringtailsoftware/uvm32/actions/workflows/build.yml/badge.svg)
+
 ## What is it for?
 
 * As a no-frills alternative to embedded script engines ([Lua](https://www.lua.org/), [Duktape](https://duktape.org/), [MicroPython](https://micropython.org/), etc)
