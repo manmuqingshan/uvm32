@@ -6,7 +6,7 @@ TESTS = \
     meter \
     extram \
     badcode \
-    invalid_opcodes \
+    opcodes \
     minirv32_internal
 
 RUNCMD = $(foreach TEST,${TESTS},make -C ${TEST} &&)
