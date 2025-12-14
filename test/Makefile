@@ -15,7 +15,7 @@ CLEANCMD = $(foreach TEST,${TESTS},make -C ${TEST} clean &&)
 ifeq (,$(shell which gcovr))
 	GCOVRCMD=echo Install gcovr for code coverage reports
 else
-    GCOVRCMD=gcovr -r ../ --filter ".*uvm32.c" --filter ".*mini.*"
+    GCOVRCMD=gcovr -r ../ --filter "(.*uvm32.*)"
 	PERC=$(shell gcovr -r ../ --filter ".*uvm32.c" | grep uvm | awk '{print $$4}')
 endif
 
