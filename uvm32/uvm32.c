@@ -39,9 +39,6 @@ SOFTWARE.
 #include CUSTOM_STDLIB_H
 #endif
 
-// On an invalid operation, an error is set in uvm32_state_t, but a valid pointer still needs to be temporarily used
-static uint32_t garbage;
-
 #ifdef UVM32_STACK_PROTECTION
 #define STACK_CANARY_VALUE 0x42 // magic value for stack canary
 #endif
@@ -364,8 +361,8 @@ static uint32_t *arg_to_ptr(uvm32_state_t *vmst, uvm32_evt_t *evt, uvm32_arg_t a
             // if something invalid is passed to arg, we should never crash
             // return a pointer to something readable
             setStatusErr(vmst, UVM32_ERR_ARGS);
-            garbage = 0;
-            return &garbage;
+            vmst->garbage = 0;
+            return &vmst->garbage;
         break;
     }
 }
@@ -384,8 +381,8 @@ const char *uvm32_arg_getcstr(uvm32_state_t *vmst, uvm32_evt_t *evt, uvm32_arg_t
         return (const char *)scb.ptr; // we know the buffer in cpu memory is null terminated, so safe to pass back
     } else {
         setStatusErr(vmst, UVM32_ERR_MEM_RD);
-        garbage = 0;
-        return (const char *)&garbage;
+        vmst->garbage = 0;
+        return (const char *)&vmst->garbage;
     }
 }
 
@@ -393,8 +390,8 @@ uvm32_slice_t uvm32_arg_getslice(uvm32_state_t *vmst, uvm32_evt_t *evt, uvm32_ar
     uvm32_slice_t scb;
     if (!get_safeptr(vmst, uvm32_arg_getval(vmst, evt, argPtr), uvm32_arg_getval(vmst, evt, argLen), &scb)) {
         setStatusErr(vmst, UVM32_ERR_MEM_RD);
-        garbage = 0;
-        scb.ptr = (uint8_t *)&garbage;
+        vmst->garbage = 0;
+        scb.ptr = (uint8_t *)&vmst->garbage;
         scb.len = 0;
     }
     return scb;
@@ -404,8 +401,8 @@ uvm32_slice_t uvm32_arg_getslice_fixed(uvm32_state_t *vmst, uvm32_evt_t *evt, uv
     uvm32_slice_t scb;
     if (!get_safeptr(vmst, uvm32_arg_getval(vmst, evt, argPtr), len, &scb)) {
         setStatusErr(vmst, UVM32_ERR_MEM_RD);
-        garbage = 0;
-        scb.ptr = (uint8_t *)&garbage;
+        vmst->garbage = 0;
+        scb.ptr = (uint8_t *)&vmst->garbage;
         scb.len = 0;
     }
     return scb;

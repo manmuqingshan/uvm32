@@ -146,6 +146,7 @@ typedef struct {
     uint8_t *_extram;                       /*! External RAM pointer, or NULL */
     uint32_t _extramLen;                    /*! Length of external RAM */
     bool _extramDirty;                      /*! Flag to indicate VM code has modified extram since last run */
+    uint32_t garbage;                       /*! Used for returning valid pointer when operations fail */
 } uvm32_state_t;
 
 /*! Initialise a VM instance */
