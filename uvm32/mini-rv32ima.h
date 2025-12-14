@@ -103,7 +103,11 @@ struct MiniRV32IMAState
 };
 
 #ifndef MINIRV32_STEPPROTO
-MINIRV32_DECORATE int32_t MiniRV32IMAStep(void *userdata, struct MiniRV32IMAState * state, uint8_t * image, uint32_t vProcAddress, uint32_t elapsedUs, int count );
+MINIRV32_DECORATE int32_t MiniRV32IMAStep(void *userdata, struct MiniRV32IMAState * state, uint8_t * image, uint32_t vProcAddress,
+#ifndef MINIRV32_NO_TIMERS_NO_CYCLES
+uint32_t elapsedUs,
+#endif
+int count );
 #endif
 
 #ifdef MINIRV32_IMPLEMENTATION
@@ -116,7 +120,11 @@ MINIRV32_DECORATE int32_t MiniRV32IMAStep(void *userdata, struct MiniRV32IMAStat
 #endif
 
 #ifndef MINIRV32_STEPPROTO
-MINIRV32_DECORATE int32_t MiniRV32IMAStep(void *userdata, struct MiniRV32IMAState * state, uint8_t * image, uint32_t vProcAddress, uint32_t elapsedUs, int count )
+MINIRV32_DECORATE int32_t MiniRV32IMAStep(void *userdata, struct MiniRV32IMAState * state, uint8_t * image, uint32_t vProcAddress,
+#ifndef MINIRV32_NO_TIMERS_NO_CYCLES
+uint32_t elapsedUs,
+#endif
+int count )
 #else
 MINIRV32_STEPPROTO
 #endif
@@ -436,6 +444,7 @@ MINIRV32_STEPPROTO
 							case 0:
 								trap = ( CSR( extraflags ) & 3) ? (11+1) : (8+1); // ECALL; 8 = "Environment call from U-mode"; 11 = "Environment call from M-mode"
 								break;
+#ifndef MINIRV32_NO_BREAKPOINT_NO_INTERRUPTS
 							case 1:
 								trap = (3+1); break; // EBREAK 3 = "Breakpoint"
 							case 0x105: //WFI (Wait for interrupts)
@@ -443,6 +452,7 @@ MINIRV32_STEPPROTO
 								CSR( extraflags ) |= 4; //Infor environment we want to go to sleep.
 								SETCSR( pc, pc + 4 );
 								return 1;
+#endif
 							default:
 								trap = (2+1); break; // Illegal opcode.
 							}

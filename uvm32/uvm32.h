@@ -44,6 +44,7 @@ SOFTWARE.
 #define MINIRV32_NO_TIMERS_NO_CYCLES
 #define MINIRV32_NO_ZICSR
 #define MINIRV32_NO_ATOMICS
+#define MINIRV32_NO_BREAKPOINT_NO_INTERRUPTS
 #define MINI_RV32_RAM_SIZE UVM32_MEMORY_SIZE
 #define MINIRV32_POSTEXEC(pc, ir, retval) {if (retval > 0) return retval;}
 uint32_t _uvm32_extramLoad(void *userdata, uint32_t addr, uint32_t accessTyp);
