@@ -8,7 +8,7 @@ uvm32 is a RISC-V emulator, wrapped in a management interface and provided with 
 
 ![](https://github.com/ringtailsoftware/uvm32/actions/workflows/build.yml/badge.svg)
 
-uvm32.c: ![](https://ringtailsoftware.github.io/uvm32/badge.svg)
+![](https://ringtailsoftware.github.io/uvm32/badge.svg)
 
 ## What is it for?
 
