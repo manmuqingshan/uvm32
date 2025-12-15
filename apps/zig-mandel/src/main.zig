@@ -36,5 +36,4 @@ fn mandel() void {
 
 export fn main() void {
     mandel();
-    uvm.println("Hello world");
 }

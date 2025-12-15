@@ -26,18 +26,18 @@ void main(void) {
                         putc(uvm32_arg_getval(&vmst, &evt, ARG0));
                     break;
                     case UVM32_SYSCALL_PRINTLN: {
-                        const char *str = uvm32_arg_getcstr(&vmst, &evt, ARG0);
-                        println(str);
+                        //const char *str = uvm32_arg_getcstr(&vmst, &evt, ARG0);
+                        //println(str);
                     } break;
                     default:
-                        println("Unhandled syscall");
+                        // println("Unhandled syscall");
                     break;
                 }
             break;
             case UVM32_EVT_ERR:
-                println("error: ");
-                printdec(evt.data.err.errcode);
-                println("");
+                // println("error: ");
+                // printdec(evt.data.err.errcode);
+                // println("");
             break;
             default:
             break;
