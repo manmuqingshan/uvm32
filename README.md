@@ -123,6 +123,7 @@ int main(int argc, char *argv[]) {
     * [host-mini](hosts/host-mini) minimal vm host (shown above), with baked in bytecode
     * [host-parallel](hosts/host-parallel) parallel vm host running multiple vm instances concurrently, with baked in bytecode
     * [host-arduino](hosts/host-arduino) vm host as Arduino sketch (`make test` to run AVR code in qemu)
+    * [host-sdl](hosts/host-sdl) vm host providing framebuffer and audio support (see [apps/zigdoom])
  * C sample apps
     * [apps/helloworld](apps/helloworld) C hello world program
     * [apps/heap](apps/heap) Demonstration of `malloc()` on extram in C
