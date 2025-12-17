@@ -155,6 +155,7 @@ In the host:
 uvm32_slice_t slice = uvm32_arg_getslice_fixed(vmst, evt, ARG0, sizeof(float) * 3);
 float *vector3 = (float *)slice.ptr;
 ...
+```
 
 ## `uvm32_arg_setval`
 
