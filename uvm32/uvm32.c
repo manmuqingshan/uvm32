@@ -251,10 +251,9 @@ uint32_t uvm32_run(uvm32_state_t *vmst, uvm32_evt_t *evt, uint32_t instr_meter) 
 
     // run CPU until no longer in running state
     while(vmst->_status == UVM32_STATUS_RUNNING && instr_meter > 0) {
-        uint64_t elapsedUs = 1;
         uint32_t ret;
 
-        ret = MiniRV32IMAStep(vmst, &vmst->_core, vmst->_memory, elapsedUs, 1);
+        ret = MiniRV32IMAStep(vmst, &vmst->_core, vmst->_memory, 1);
         instr_meter--;
     
         switch(ret) {

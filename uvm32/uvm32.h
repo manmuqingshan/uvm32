@@ -38,6 +38,7 @@ SOFTWARE.
 // Include definitions for required syscalls
 #include "uvm32_sys.h"
 
+/*! Union for safely casting differently sized types */
 typedef union __attribute__((packed)) {
     uint32_t u32;
     uint16_t u16;
@@ -48,7 +49,7 @@ typedef union __attribute__((packed)) {
 } uvm32_val_t;
 
 // Setup and hooks for mini-rv32ima emulator core
-#define MINIRV32_DECORATE static
+#define MINIRV32_DECORATE static inline
 #define MINIRV32_RETURN_TRAP
 #define MINIRV32_NO_TIMERS_NO_CYCLES
 #define MINIRV32_NO_ZICSR
